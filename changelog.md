@@ -4,7 +4,7 @@
 
 2025-07-14
 
-Translations are now automatically read from JSON files, and only are read once the client has requested translations for a particular language. Translated text may now take the form of arrays, used to handle sequences of phrases combined with spaces. Translated text may now take the form of objects with fields like "singular" and "plural", which are chosen automatically.
+Translations are now automatically read from JSON files, and only are read once the client has requested translations for a particular language. Translated text may now take the form of arrays, used to handle sequences of phrases combined with spaces. Translated text may now take the form of objects with fields like "singular" and "plural", which are chosen automatically. Added many new data types to make use of `Intl` format methods.
 
 ### Added
 

@@ -30,7 +30,7 @@ talktalk/en.json:
 
 index.html:
 ```html
-<script src="talktalk/talktalk.0.2.0.js">
+<script src="talktalk/talktalk.0.2.0.js"></script>
 <h1 data-talktalk="title"></h1>
 <script>
 	console.log(Talktalk.talk("message", {name: "world"}));
