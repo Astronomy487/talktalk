@@ -2,7 +2,7 @@
 
 ## Version 0.2.0
 
-Released 2025-07-14
+2025-07-14
 
 Translations are now automatically read from JSON files, and only are read once the client has requested translations for a particular language. Translated text may now take the form of arrays, used to handle sequences of phrases combined with spaces. Translated text may now take the form of objects with fields like "singular" and "plural", which are chosen automatically.
 
@@ -27,11 +27,11 @@ Translations are now automatically read from JSON files, and only are read once 
 
 ### Removed
 
-- `Talktalk.provide` is no longer used to supply translations. Translations are now dynamically read from `talktalk/[lang].json` files
+- `Talktalk.provide` is no longer used to supply translations. Translations are now dynamically read from `talktalk/[lang].json` files. If you really want to supply it at runtime, use `Talktalk.insertTranslations`
 
 ## Version 0.1.0
 
-Released 2025-07-10
+2025-07-10
 
 This is the very first version! Wow!
 
