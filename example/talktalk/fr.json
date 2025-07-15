@@ -1,0 +1,27 @@
+{
+	"date:year": "numeric",
+	"date:month": "short",
+	"date:day": "numeric",
+	
+	"title": "Exemple de webpage",
+	"h1": "Ceci est un exemple de webpage.",
+	"todaysdateis": "Aujourd'hui est le #date.",
+	"numbertest": {
+		"singular": "Il y a #n chose.",
+		"plural": "Il y a #n choses."
+	},
+	"bookinginfo": [
+		"Vous avez réservé",
+		{
+			"singular": "#rooms chambre",
+			"plural": "#rooms chambres"
+		},
+		"pour",
+		{
+			"singular": "#nights nuit.",
+			"plural": "#nights nuits."
+		}
+	],
+	"currencies": "Devises",
+	"languages": "Langues"
+}

@@ -1,0 +1,13 @@
+{
+	"date:year": "numeric",
+	"date:month": "short",
+	"date:day": "numeric",
+	
+	"title": "ウェブページの例",
+	"h1": "これはサンプルのウェブページです。",
+	"todaysdateis": "今日の日付は#dateです。",
+	"numbertest": "#nつあります。",
+	"bookinginfo": "#nights泊#rooms部屋を予約しました。",
+	"currencies": "通貨",
+	"languages": "言語"
+}

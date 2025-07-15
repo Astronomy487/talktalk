@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<style>
+		body {
+			background: black;
+			color: white;
+			font-family: system-ui, sans-serif;
+			width: 32rem;
+			margin: 8rem auto;
+		}
+		::selection {
+			background: white;
+			color: black;
+		}
+	</style>
+	<title data-talktalk="title"></title>
+	<script src="../talktalk.js" data-talktalk="talktalk"></script>
+</head>
+<body>
+	<h1 data-talktalk="h1"></h1>
+	<script>
+		document.body.appendChild(document.createElement("p")).innerText = Talktalk.talk("todaysdateis", {date: new Date()});
+		//document.body.appendChild(document.createElement("p")).innerText = Talktalk.talk("currenttime", {time: new Date(), "date:year": undefined, "date:month": undefined, "date:day": undefined, "date:hour": "numeric", "date:minute": "2-digit"});
+		document.body.appendChild(document.createElement("p")).innerText = Talktalk.talk("currenttime", {time: new Talktalk.TimeOfDay()});
+		document.body.appendChild(document.createElement("p")).innerText = Talktalk.talk("accountbalance", {balance: new Talktalk.AmountOfMoney(10, "CNY")});
+		document.body.appendChild(document.createElement("p")).innerText = Talktalk.talk("accountbalance", {balance: new Talktalk.AmountOfUnit(10, "meter")});
+		
+		let ul = document.body.appendChild(document.createElement("ul"));
+		ul.appendChild(document.createElement("li")).innerText = Talktalk.talk("numbertest", {n: 0});
+		ul.appendChild(document.createElement("li")).innerText = Talktalk.talk("numbertest", {n: 1});
+		ul.appendChild(document.createElement("li")).innerText = Talktalk.talk("numbertest", {n: 2});
+		ul.appendChild(document.createElement("li")).innerText = Talktalk.talk("numbertest", {n: 3});
+		
+		document.body.appendChild(document.createElement("p")).innerText = Talktalk.talk("bookinginfo", {rooms: 5, nights: 2});
+		
+		let ltrElement = document.body.appendChild(document.createElement("p"));
+		ltrElement.dir = "ltr";
+		ltrElement.innerText = "This text is always left in English. It remembers to use dir=\"ltr\", just in case the client is using an RTL language!";
+		
+		for (let [headerKey, codes, constructor] of [
+			["currencies", ["USD", "CAD", "EUR", "CNY"], Talktalk.Currency],
+			["languages", ["en", "en-US", "fr", "bn", "ar", "ja", "fa"], Talktalk.Language],
+			[undefined, [5,10,59,61], Talktalk.Duration]
+		]) {
+			let table = document.body.appendChild(document.createElement("table"));
+			table.style.width = "100%";
+			table.style.margin = "1rem 0";
+			if (headerKey) {
+				let th = table.appendChild(document.createElement("tr")).appendChild(document.createElement("th"));
+				th.colspan = 2;
+				th.innerText = Talktalk.talk(headerKey);
+			}
+			for (let code of codes) {
+				let tr = table.appendChild(document.createElement("tr"));
+				tr.appendChild(document.createElement("td")).innerText = code;
+				tr.appendChild(document.createElement("td")).innerText = Talktalk.talk(new constructor(code));
+			}
+		}
+	</script>
+</body>
+</html>

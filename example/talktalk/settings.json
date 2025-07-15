@@ -1,0 +1,5 @@
+{
+	"fallbackLanguage": "en",
+	"forceLanguageWithQueryParameter": "lang",
+	"maxRecursion": 10
+}

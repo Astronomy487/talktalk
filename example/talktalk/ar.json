@@ -1,0 +1,18 @@
+{
+	"date:year": "numeric",
+	"date:month": "short",
+	"date:day": "numeric",
+	
+	"title": "مثال لصفحة الويب",
+	"h1": "هذه صفحة ويب مثال.",
+	"todaysdateis": "تاريخ اليوم هو #date.",
+	"numbertest": {
+		"zero": "هناك #n أشياء.",
+		"singular": "هناك #n الشيء.",
+		"dual": "هناك #n شيء.",
+		"plural": "هناك #n شيئًا."
+	},
+	"bookinginfo": "لقد قمت بحجز #rooms غرفة لمدة #nights ليلة.",
+	"currencies": "العملات",
+	"languages": "اللغات"
+}
