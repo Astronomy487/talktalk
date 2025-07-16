@@ -2,6 +2,8 @@
 
 ## Version 0.3.0
 
+2025-07-15
+
 ### Added
 
 - Lists now count as a special type, which use `Intl.ListFormat` to join together strings/special types with commas (e.g. "red, white, and blue"). Has options `list:type` and `list:style`
