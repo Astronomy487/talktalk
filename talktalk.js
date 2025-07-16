@@ -58,6 +58,7 @@ class Talktalk {
 		return lang;
 	}
 	static writingDirection(lang) {
+		if (lang == "rtl" || lang == "ltr") return lang;
 		if (lang) return findWritingDirection(lang);
 		for (let lang of Talktalk.langs) return findWritingDirection(lang);
 		function findWritingDirection(lang) {
@@ -65,6 +66,35 @@ class Talktalk {
 			if (["ar", "arc", "az", "dhivehi", "ff", "he", "ku", "nqo", "fa", "rhg", "syc", "syr", "ur"].includes(lang)) return "rtl";
 			return "ltr";
 		}
+	}
+	static quoteStrings = { //filled programmatically later
+		smart: { left: {}, right: {} },
+		straight: { left: {}, right: {} }
+	}
+	static wrapInQuotes(text, levels = 0, smart = true) {
+		let quotesObject = smart ? Talktalk.quoteStrings.smart : Talktalk.quoteStrings.straight;
+		let left = undefined;
+		for (let lang of Talktalk.langs) if (!left) if (lang in quotesObject.left) {
+			left = quotesObject.left[lang];
+			break;
+		}
+		left ||= quotesObject.left.en;
+		let right = undefined;
+		for (let lang of Talktalk.langs) if (!right) if (lang in quotesObject.right) {
+			right = quotesObject.right[lang];
+			break;
+		}
+		right ||= quotesObject.right.en;
+		return left[levels%left.length] + text + right[levels%right.length];
+	}
+	static wrapInDirectionalMarkers(text, originalLanguage = "ltr") {
+		//if originalLanguage != user's writing direction, wrap text in the appropriate directional writing markers
+		let innerDirection = Talktalk.writingDirection(originalLanguage);
+		let outerDirection = Talktalk.writingDirection();
+		if (innerDirection == outerDirection) return text;
+		if (innerDirection == "ltr") return "\u2066" + text + "\u2069";
+		if (innerDirection == "rtl") return "\u2067" + text + "\u2069";
+		return text;
 	}
 	static getPluralitySequence(number) {
 		let plurality = undefined;
@@ -177,16 +207,10 @@ class Talktalk {
 	}
 	static talk(key, replacements = {}, recursionLevel = 0) {
 		if (recursionLevel > Talktalk.maxRecursion) throw "Too much recursion";
-		//if key is date/number, handle special
 		if (Talktalk.isSpecialType(key)) return Talktalk.handleSpecialTypes(key, replacements);
-		if (Array.isArray(key)) return Talktalk.handleTranslatedText
-		//perform lookup
 		let text = Talktalk.readTranslationKey(key);
-		//if text is date/number, handle special
-		if (Talktalk.isSpecialType(text)) return Talktalk.handleSpecialTypes(text, replacements);
-		//now call "handleTranslatedText"
-		//(or call handleTranslatedText on each item if this is an array!)
 		if (Array.isArray(text)) return text.map(x => Talktalk.handleTranslatedText(x, replacements, recursionLevel+1)).join(Talktalk.space());
+		if (Talktalk.isSpecialType(text)) return Talktalk.handleSpecialTypes(text, replacements);
 		return Talktalk.handleTranslatedText(text, replacements, recursionLevel+1);
 	}
 	static handleTranslatedText(text, replacements, recursionLevel) {
@@ -230,6 +254,7 @@ class Talktalk {
 	static isSpecialType(x) {
 		if (typeof x == "string") return false;
 		if (typeof x == "number") return true;
+		if (Array.isArray(x)) return true;
 		if (x instanceof Date) return true;
 		if (x instanceof Talktalk.Duration) return true;
 		if (x instanceof Talktalk.Language) return true;
@@ -241,6 +266,7 @@ class Talktalk {
 		if (x instanceof Talktalk.TimeOfDay) return true;
 		if (x instanceof Talktalk.AmountOfMoney) return true;
 		if (x instanceof Talktalk.AmountOfUnit) return true;
+		if (x instanceof Talktalk.RelativeTime) return true;
 		return false;
 	}
 	static specialTypesFormatFields = {
@@ -295,10 +321,16 @@ class Talktalk {
 		],
 		dateTimeField: [
 			"style", "fallback"
+		],
+		list: [
+			"type", "style"
+		],
+		relativeTime: [
+			"numberingSystem", "style", "numeric"
 		]
 	};
 	static handleSpecialTypes(x, settings) { //handle dates, numbers. if not special, throw so
-		function handleSpecialTypesAlgorithm(prefix, constructor, defaultSettings, selectorName, value) {
+		function handleSpecialTypesAlgorithm(prefix, constructor, defaultSettings, selectorName, ...args) {
 			try {
 				for (let lang of Talktalk.langs) {
 					let shortLang = Talktalk.shortLang(lang);
@@ -312,7 +344,7 @@ class Talktalk {
 							formatSettings[becomes] = read;
 						} catch(e) {}
 					}
-					return new constructor(lang, formatSettings)[selectorName](value);
+					return new constructor(lang, formatSettings)[selectorName](...args);
 				}
 			} catch(e) {
 				return x.toString();
@@ -320,6 +352,10 @@ class Talktalk {
 		}
 		if (typeof x == "number") {
 			return handleSpecialTypesAlgorithm("number", Intl.NumberFormat, {}, "format", x);
+		}
+		if (Array.isArray(x)) {
+			x = x.map(item => Talktalk.isSpecialType(item) ? Talktalk.handleSpecialTypes(item) : item);
+			return handleSpecialTypesAlgorithm("list", Intl.ListFormat, {}, "format", x);
 		}
 		if (x instanceof Date) {
 			return handleSpecialTypesAlgorithm("date", Intl.DateTimeFormat, {}, "format", x);
@@ -335,6 +371,9 @@ class Talktalk {
 		}
 		if (x instanceof Talktalk.AmountOfUnit) {
 			return handleSpecialTypesAlgorithm("amountOfUnit", Intl.NumberFormat, {style: "unit", unit: x.code, unitDisplay: "long"}, "format", x.amount);
+		}
+		if (x instanceof Talktalk.RelativeTime) {
+			return handleSpecialTypesAlgorithm("relativeTime", Intl.RelativeTimeFormat, {numeric: "auto"}, "format", x.amount, x.unit);
 		}
 		//a bunch of ones that all use Intl.DisplayNames and Talktalk.* objects that just wrap a .code
 		for (let [constructor, text] of [
@@ -390,7 +429,13 @@ class Talktalk {
 				if (hours) this.hours = hours;
 				if (days) this.days = days;
 			} else throw "I don't know how to make a Talktalk.Duration out of " + args;
-		
+		}
+	}
+	static RelativeTime = class {
+		constructor(amount, unit) {
+			if (typeof amount != "number" || typeof unit != "string") throw "I don't know how to make a Talktalk.RelativeTime out of " + amount + " " + unit;
+			this.amount = amount;
+			this.unit = unit;
 		}
 	}
 	static Language = class {constructor(code) {this.code = code;}}
@@ -426,7 +471,7 @@ class Talktalk {
 	}
 }
 
-for (let className of ["Duration", "Language", "Region", "Script", "Currency", "Calendar", "DateTimeField", "TimeOfDay", "AmountOfMoney", "AmountOfUnit"]) {
+for (let className of ["Duration", "Language", "Region", "Script", "Currency", "Calendar", "DateTimeField", "TimeOfDay", "AmountOfMoney", "AmountOfUnit", "RelativeTime"]) {
 	Talktalk[className[0].toLowerCase() + className.substring(1)] = function(...args) {return new Talktalk[className](...args);}
 	Talktalk[className].prototype.talk = function(replacements) {
 		return Talktalk.talk(this, replacements);
@@ -443,3 +488,42 @@ try {
 document.addEventListener("DOMContentLoaded", function() {
 	Talktalk.fillElements();
 });
+
+//programmatically fill quoteStrings
+for (let [open, close, followers] of [
+	[["“", "‘"], ["”", "’"], "en"], //fallback
+	[["‘", "“"], ["’", "”"], "en-GB en-IE ga"], //british english style, single
+	[["„", "‚"], ["“", "‘"], "de cs sl lt et bg is"], //german style
+	[["«\u00a0", "“", "‘"], ["\u00a0»", "”", "’"], "fr"], //french style, spaces
+	[["«", "“", "‘"], ["»", "”", "’"], "es-ES pt-PT it de-CH lv nn nb no el ko-KP tr az hy mn fa uz kk"], //french style, no space
+	[["«", "„"], ["»", "“"], "ru be uk"],
+	[["„", "‚"], ["”", "’"], "nl hr bs sr ro mk sq cnr ka"], //eastern style
+	[["„", "«"], ["”", "»"], "ro"],
+	[["„", "»", "’"], ["”", "«", "’"], "hu"],
+	[["„", "»", "‘"], ["”", "«", "’"], "pl"],
+	[["»", "›"], ["«", "‹"], "da"],
+	[["”", "’"], ["”", "’"], "fi sv"],
+	[["「", "『"], ["」", "』"], "ja zh-Hant"],
+	[["”", "‘"], ["“", "’"], "ar arc az dhivehi ff he ku nqo rhg syc syr ur"], //rtl (farsi is fine with guillimets)
+]) {
+	let smartToStraight = {
+		"“": "\"",
+		"‘": "'",
+		"”": "\"",
+		"’": "'",
+		"„": "„",
+		"‚": "‚"
+	};
+	for (let lang of followers.split(" ")) {
+		Talktalk.quoteStrings.smart.left[lang] = open;
+		Talktalk.quoteStrings.smart.right[lang] = close;
+		Talktalk.quoteStrings.straight.left[lang] = open.map(function(smart){
+			if (smart in smartToStraight) return smartToStraight[smart];
+			return smart;
+		});
+		Talktalk.quoteStrings.straight.right[lang] = close.map(function(smart){
+			if (smart in smartToStraight) return smartToStraight[smart];
+			return smart;
+		});
+	}
+}

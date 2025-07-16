@@ -1,5 +1,13 @@
 # Talktalk changelog
 
+## Version 0.3.0
+
+### Added
+
+- Lists now count as a special type, which use `Intl.ListFormat` to join together strings/special types with commas (e.g. "red, white, and blue"). Has options `list:type` and `list:style`
+- Added function `Talktalk.wrapInDirectionalMarkers(text, originalLanguage)` which, if the user's language uses a different writing direction than the provided `originalLanguage`, will wrap the text in unicode characters to isolate the inner text with the correct writing direction. Useful for putting LTR text within RTL text and vice versa. Returns the original text if both languages have the same direction.
+- Added function `Talktalk.wrapInQuotes(text, levels = 0, smart = true)` to wrap text in quotes :)
+
 ## Version 0.2.0
 
 2025-07-14
