@@ -478,12 +478,12 @@ for (let className of ["Duration", "Language", "Region", "Script", "Currency", "
 	}
 }
 
-Talktalk.setupLangPreferences();
-
 try {
 	let script = document.querySelector("script[data-talktalk]");
 	Talktalk.directory = script.getAttribute("data-talktalk");
 } catch(e) {}
+
+Talktalk.setupLangPreferences();
 
 document.addEventListener("DOMContentLoaded", function() {
 	Talktalk.fillElements();

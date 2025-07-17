@@ -1,5 +1,13 @@
 # Talktalk changelog
 
+## Version 0.3.1
+
+2025-07-17
+
+### Fixed
+
+- Fixed a bug that prevented Talktalk from reading the `data-talktalk` attribute on the `<script>` element, which prevented Talktalk from using any directory other than the default `talktalk`
+
 ## Version 0.3.0
 
 2025-07-15

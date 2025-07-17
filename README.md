@@ -1,6 +1,6 @@
 # Talktalk
 
-Current version: 0.3.0
+Current version: 0.3.1
 
 > Talk to me in fr-FR
 > Talk to me in es-MX
@@ -17,7 +17,7 @@ Talktalk also handles "special types" like dates, numbers, and other things supp
 
 ## Minimal example
 
-Import `talktalk.0.3.0.js` via a `<script>` tag. Once loaded, it will read the user's device language(s) to get its sequence of preferred languages (e.g. `["en-US", "en"]`). "en" will always appear as a fallback. It will look for files named `talktalk/en-US.json` and `talktalk/en.json` to associate "translation keys" with translated strings.
+Import `talktalk.0.3.1.js` via a `<script>` tag. Once loaded, it will read the user's device language(s) to get its sequence of preferred languages (e.g. `["en-US", "en"]`). "en" will always appear as a fallback. It will look for files named `talktalk/en-US.json` and `talktalk/en.json` to associate "translation keys" with translated strings.
 
 talktalk/en.json:
 ```json
@@ -30,7 +30,7 @@ talktalk/en.json:
 
 index.html:
 ```html
-<script src="talktalk/talktalk.0.3.0.js"></script>
+<script src="talktalk/talktalk.0.3.1.js"></script>
 <h1 data-talktalk="title"></h1>
 <script>
 	console.log(Talktalk.talk("message", {name: "world"}));
