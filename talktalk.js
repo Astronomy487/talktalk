@@ -87,7 +87,7 @@ class Talktalk {
 		right ||= quotesObject.right.en;
 		return left[levels%left.length] + text + right[levels%right.length];
 	}
-	static wrapInDirectionalMarkers(text, originalLanguage = "ltr") {
+	static wrapInDirectionalMarkers(text, originalLanguage = "ltr") { //note - does not apply lang attribute to inner elements
 		//if originalLanguage != user's writing direction, wrap text in the appropriate directional writing markers
 		let innerDirection = Talktalk.writingDirection(originalLanguage);
 		let outerDirection = Talktalk.writingDirection();
@@ -193,6 +193,7 @@ class Talktalk {
 		if (Talktalk.langs.length == 0) Talktalk.langs = [Talktalk.fallbackLanguage];
 		//other things that need to happen once we've decided on language
 		document.dir = Talktalk.writingDirection();
+		document.querySelector("html").setAttribute("lang", Talktalk.displayLanguage());
 	}
 	//main text lookup functions
 	static readTranslationKey(key, requirement = undefined) {

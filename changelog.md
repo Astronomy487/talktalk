@@ -1,5 +1,13 @@
 # Talktalk changelog
 
+## Version 0.3.2
+
+2025-08-25
+
+### Added
+
+- `<html>` element `lang` attribute is now set according to the display language
+
 ## Version 0.3.1
 
 2025-07-17
